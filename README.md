@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QR Code Generator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+    body {
+      font-family: 'Syne', sans-serif;
+      background: #f5f4f0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+ 
+    .card {
+      background: #ffffff;
+      border-radius: 20px;
+      border: 1px solid #e0ddd6;
+      padding: 2.5rem 2rem;
+      width: 100%;
+      max-width: 620px;
+    }
+ 
+    .hero-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #999;
+      margin-bottom: 0.4rem;
+    }
+ 
+    .hero-title {
+      font-size: 30px;
+      font-weight: 800;
+      color: #1a1a18;
+      line-height: 1.1;
+      margin-bottom: 0.3rem;
+    }
+ 
+    .hero-sub {
+      font-size: 14px;
+      color: #777;
+      margin-bottom: 2rem;
+    }
+ 
+    .input-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 0.75rem;
+      align-items: stretch;
+    }
+ 
+    .url-input {
+      flex: 1;
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      padding: 0 14px;
+      height: 44px;
+      border: 1.5px solid #d4d1c9;
+      border-radius: 10px;
+      background: #f5f4f0;
+      color: #1a1a18;
+      outline: none;
+      transition: border-color 0.15s, background 0.15s;
+    }
+ 
+    .url-input:focus {
+      border-color: #888;
+      background: #fff;
+    }
+ 
+    .url-input::placeholder { color: #bbb; }
+ 
+    .gen-btn {
+      height: 44px;
+      padding: 0 20px;
+      font-family: 'Syne', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      border: none;
+      border-radius: 10px;
+      background: #1a1a18;
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+ 
+    .gen-btn:hover { opacity: 0.82; }
+    .gen-btn:active { transform: scale(0.97); }
+ 
+    .error-msg {
+      font-size: 13px;
+      color: #c0392b;
+      margin-bottom: 1rem;
+      display: none;
+    }
+ 
+    .size-row {
+      display: none;
+      gap: 8px;
+      margin-bottom: 1.75rem;
+      flex-wrap: wrap;
+    }
+ 
+    .size-btn {
+      font-family: 'Syne', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 5px 16px;
+      border: 1.5px solid #d4d1c9;
+      border-radius: 999px;
+      background: transparent;
+      color: #777;
+      cursor: pointer;
+      transition: all 0.12s;
+    }
+ 
+    .size-btn.active {
+      background: #1a1a18;
+      color: #fff;
+      border-color: #1a1a18;
+    }
+ 
+    .size-btn:hover:not(.active) {
+      background: #f0ede8;
+      color: #1a1a18;
+    }
+ 
+    .result-area {
+      display: none;
+      gap: 2rem;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+ 
+    .result-area.visible { display: flex; }
+ 
+    .qr-card {
+      background: #fff;
+      border: 1px solid #e0ddd6;
+      border-radius: 14px;
+      padding: 1.25rem;
+      flex-shrink: 0;
+    }
+ 
+    #qr-container img { display: block; border-radius: 4px; }
+ 
+    .qr-meta {
+      flex: 1;
+      min-width: 180px;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      padding-top: 0.25rem;
+    }
+ 
+    .meta-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #aaa;
+      margin-bottom: 3px;
+    }
+ 
+    .meta-url {
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      color: #555;
+      word-break: break-all;
+      line-height: 1.6;
+    }
+ 
+    .dl-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      height: 38px;
+      padding: 0 18px;
+      font-family: 'Syne', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      border: 1.5px solid #d4d1c9;
+      border-radius: 10px;
+      background: transparent;
+      color: #1a1a18;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.12s;
+    }
+ 
+    .dl-btn:hover { background: #f0ede8; }
+ 
+    .tip {
+      font-size: 12px;
+      color: #999;
+      line-height: 1.7;
+      padding: 10px 14px;
+      border-left: 2px solid #d4d1c9;
+      background: #f9f8f5;
+      border-radius: 0 8px 8px 0;
+    }
+ 
+    @media (max-width: 480px) {
+      .card { padding: 1.75rem 1.25rem; }
+      .hero-title { font-size: 24px; }
+      .input-row { flex-direction: column; }
+      .gen-btn { width: 100%; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+ 
+<div class="card">
+  <p class="hero-label">Utility Tool</p>
+  <h1 class="hero-title">QR Code Generator</h1>
+  <p class="hero-sub">Paste any URL and get an instant, scannable QR code.</p>
+ 
+  <div class="input-row">
+    <input class="url-input" id="url-input" type="url"
+      placeholder="https://example.com" autocomplete="off" spellcheck="false" />
+    <button class="gen-btn" onclick="generate()">
+      &#x2317; Generate
+    </button>
+  </div>
+ 
+  <p class="error-msg" id="err-msg">Please enter a valid URL starting with http:// or https://</p>
+ 
+  <div class="size-row" id="size-row">
+    <button class="size-btn active" data-size="200" onclick="changeSize(this)">Small</button>
+    <button class="size-btn" data-size="300" onclick="changeSize(this)">Medium</button>
+    <button class="size-btn" data-size="400" onclick="changeSize(this)">Large</button>
+  </div>
+ 
+  <div class="result-area" id="result-area">
+    <div class="qr-card">
+      <div id="qr-container"></div>
+    </div>
+    <div class="qr-meta">
+      <div>
+        <p class="meta-label">URL</p>
+        <p class="meta-url" id="meta-url-text"></p>
+      </div>
+      <div>
+        <p class="meta-label">Actions</p>
+        <a class="dl-btn" id="dl-btn" download="qrcode.png" href="#">
+          &#8659; Download PNG
+        </a>
+      </div>
+      <p class="tip">Point your phone camera at the QR code to open the link — no app needed.</p>
+    </div>
+  </div>
+</div>
+ 
+<script>
+  var currentSize = 200;
+  var currentUrl = '';
+ 
+  function isValidUrl(s) {
+    try {
+      var u = new URL(s);
+      return u.protocol === 'http:' || u.protocol === 'https:';
+    } catch(_) { return false; }
+  }
+ 
+  function drawQR(url, size) {
+    var container = document.getElementById('qr-container');
+    container.innerHTML = '';
+    container.style.width = size + 'px';
+    container.style.height = size + 'px';
+ 
+    new QRCode(container, {
+      text: url,
+      width: size,
+      height: size,
+      colorDark: '#000000',
+      colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.M
+    });
+ 
+    setTimeout(function() {
+      var img = container.querySelector('img');
+      var dl = document.getElementById('dl-btn');
+      if (img) dl.href = img.src;
+    }, 100);
+  }
+ 
+  function generate() {
+    var raw = document.getElementById('url-input').value.trim();
+    var err = document.getElementById('err-msg');
+    var result = document.getElementById('result-area');
+    var sizeRow = document.getElementById('size-row');
+ 
+    if (!isValidUrl(raw)) {
+      err.style.display = 'block';
+      result.classList.remove('visible');
+      sizeRow.style.display = 'none';
+      return;
+    }
+ 
+    err.style.display = 'none';
+    currentUrl = raw;
+    drawQR(raw, currentSize);
+    document.getElementById('meta-url-text').textContent = raw;
+    result.classList.add('visible');
+    sizeRow.style.display = 'flex';
+  }
+ 
+  function changeSize(btn) {
+    document.querySelectorAll('.size-btn').forEach(function(b) {
+      b.classList.remove('active');
+    });
+    btn.classList.add('active');
+    currentSize = parseInt(btn.dataset.size);
+    if (currentUrl) drawQR(currentUrl, currentSize);
+  }
+ 
+  document.getElementById('url-input').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') generate();
+  });
+</script>
+</body>
+</html>
