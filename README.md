@@ -4,7 +4,6 @@ A simple, fast, and free QR Code Generator that works right in your browser — 
 
 ## 🌐 Live Website
 👉 [Click here to open the tool](https://harshh-vs.github.io/qr-generator)
-*(replace with your actual link)*
 
 ## ✨ Features
 - Paste any URL and instantly generate a working QR code
