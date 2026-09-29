@@ -3,7 +3,7 @@
 A simple, fast, and free QR Code Generator that works right in your browser — no app, no sign-up, no installation needed.
 
 ## 🌐 Live Website
-👉 [Click here to open the tool](https://harshh-vs.github.io/qr-generator)
+👉 [Click here to open the tool](https://harshh-vs.github.io/qr-generator/)
 
 ## ✨ Features
 - Paste any URL and instantly generate a working QR code
